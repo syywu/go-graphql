@@ -129,11 +129,13 @@ func main() {
 	CreatePostsTable()
 	CreateCommentsTable()
 
-	r := chi.NewRouter()
+	router := chi.NewRouter()
 
 	// defines the object config
+	// where to start
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
 	// defines a schema config
+	// defines which query to allow users to use when making queries on the frontend
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
 	// creates schema
 	schema, err := graphql.NewSchema(schemaConfig)
@@ -141,7 +143,20 @@ func main() {
 		log.Fatal("failed to create new graphql schema", err)
 	}
 
+	// query- to get back our query
+	query := `
+		{
+			
+		}
+	`
+
+	params := graphql.Params{Schema: schema, RequestString: query}
+	r := graphql.Do(params)
+	if len(r.Errors) > 0 {
+		log.Fatal(err)
+	}
+
 	fmt.Println("listening on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":8080", router))
 
 }
