@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/graphql-go/graphql"
 	_ "github.com/lib/pq"
 )
 
@@ -95,9 +96,7 @@ func CreateCommentsTable() {
 	const createCommentTable = `
 		CREATE TABLE IF NOT EXISTS comments(
 		id SERIAL PRIMARY KEY,
-		postId INT,
-		FOREIGN KEY(postId)
-		REFERENCES posts(id),
+		postId INT NOT NULL REFERENCES posts(id),
 		name TEXT NOT NULL,
 		email VARCHAR(255) NOT NULL,
 		body TEXT
@@ -131,6 +130,16 @@ func main() {
 	CreateCommentsTable()
 
 	r := chi.NewRouter()
+
+	// defines the object config
+	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
+	// defines a schema config
+	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
+	// creates schema
+	schema, err := graphql.NewSchema(schemaConfig)
+	if err != nil {
+		log.Fatal("failed to create new graphql schema", err)
+	}
 
 	fmt.Println("listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
