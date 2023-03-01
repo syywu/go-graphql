@@ -72,9 +72,9 @@ func OpenConnection() *sql.DB {
 	return db
 }
 
-func CreatePostTable() {
+func CreatePostsTable() {
 	db := OpenConnection()
-	var createPostTable = `
+	const createPostTable = `
 	CREATE TABLE IF NOT EXISTS posts(
 		id SERIAL PRIMARY KEY,
 		userId INT NOT NULL,
@@ -90,12 +90,14 @@ func CreatePostTable() {
 
 }
 
-func CreateCommentTable() {
+func CreateCommentsTable() {
 	db := OpenConnection()
-	var createCommentTable = `
+	const createCommentTable = `
 		CREATE TABLE IF NOT EXISTS comments(
 		id SERIAL PRIMARY KEY,
-		postId INT NOT NULL,
+		postId INT,
+		FOREIGN KEY(postId)
+		REFERENCES posts(id),
 		name TEXT NOT NULL,
 		email VARCHAR(255) NOT NULL,
 		body TEXT
@@ -125,8 +127,8 @@ type Comment struct {
 
 func main() {
 
-	CreatePostTable()
-	CreateCommentTable()
+	CreatePostsTable()
+	CreateCommentsTable()
 
 	r := chi.NewRouter()
 
