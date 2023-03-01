@@ -62,8 +62,6 @@ func OpenConnection() *sql.DB {
 	db, err := sql.Open("postgres", "postgres://user:password@localhost/graphql?sslmode=disable")
 	if err != nil {
 		log.Fatal("Cannot connect to db", err)
-	} else {
-		log.Println("db connection established")
 	}
 
 	err = db.Ping()
@@ -80,7 +78,7 @@ func CreatePostTable() {
 	CREATE TABLE IF NOT EXISTS posts(
 		id SERIAL PRIMARY KEY,
 		userId INT NOT NULL,
-		title TEXT,
+		title TEXT NOT NULL,
 		body TEXT
 	);
 	`
@@ -92,6 +90,24 @@ func CreatePostTable() {
 
 }
 
+func CreateCommentTable() {
+	db := OpenConnection()
+	var createCommentTable = `
+		CREATE TABLE IF NOT EXISTS comments(
+		id SERIAL PRIMARY KEY,
+		postId INT NOT NULL,
+		name TEXT NOT NULL,
+		email VARCHAR(255) NOT NULL,
+		body TEXT
+	);
+	`
+	_, err := db.Exec(createCommentTable)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+}
+
 type Post struct {
 	ID     int    `json:"id"`
 	UserId int    `json:"userid"`
@@ -99,9 +115,18 @@ type Post struct {
 	Body   string `json:"body"`
 }
 
+type Comment struct {
+	ID     int    `json:"id"`
+	PostID int    `json:"postid"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Body   string `json:"body"`
+}
+
 func main() {
 
 	CreatePostTable()
+	CreateCommentTable()
 
 	r := chi.NewRouter()
 
