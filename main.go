@@ -154,7 +154,7 @@ func main() {
 	params := graphql.Params{Schema: schema, RequestString: query}
 	r := graphql.Do(params)
 	if len(r.Errors) > 0 {
-		log.Fatal(err)
+		log.Fatal("failed to execute graphql operations", err)
 	}
 	rJSON, _ := json.Marshal(r)
 	fmt.Printf("%s \n", rJSON)
