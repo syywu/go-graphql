@@ -155,6 +155,26 @@ func main() {
 		},
 	)
 
+	var postType = graphql.NewObject(
+		graphql.ObjectConfig{
+			Name: "Post",
+			Fields: graphql.Fields{
+				"ID": &graphql.Field{
+					Type: graphql.Int,
+				},
+				"UserId": &graphql.Field{
+					Type: graphql.Int,
+				},
+				"Title": &graphql.Field{
+					Type: graphql.String,
+				},
+				"Body": &graphql.Field{
+					Type: graphql.String,
+				},
+			},
+		},
+	)
+
 	// defines the object config
 	// where to start
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
