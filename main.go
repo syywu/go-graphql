@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -155,6 +156,8 @@ func main() {
 	if len(r.Errors) > 0 {
 		log.Fatal(err)
 	}
+	rJSON, _ := json.Marshal(r)
+	fmt.Printf("%s \n", rJSON)
 
 	fmt.Println("listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
