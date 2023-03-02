@@ -1,12 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/syywu/go-graphql/db"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/graphql-go/graphql"
@@ -40,38 +41,6 @@ import (
   },
 */
 
-func OpenConnection() *sql.DB {
-	db, err := sql.Open("postgres", "postgres://user:password@localhost/graphql?sslmode=disable")
-	if err != nil {
-		log.Fatal("Cannot connect to db", err)
-	}
-
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return db
-}
-
-func CreatePostsTable() {
-	db := OpenConnection()
-	const createPostTable = `
-	CREATE TABLE IF NOT EXISTS posts(
-		id SERIAL PRIMARY KEY,
-		userId INT NOT NULL,
-		title TEXT NOT NULL,
-		body TEXT
-	);
-	`
-	_, err := db.Exec(createPostTable)
-	if err != nil {
-		log.Fatal("cannot create posts table", err)
-	}
-	defer db.Close()
-
-}
-
 type Post struct {
 	ID     int    `json:"id"`
 	UserId int    `json:"userid"`
@@ -103,7 +72,7 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 				"body":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := OpenConnection()
+				db := db.OpenConnection()
 				userid, _ := p.Args["userid"].(int)
 				title, _ := p.Args["title"].(string)
 				body, _ := p.Args["body"].(string)
@@ -126,7 +95,7 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 				"body":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := OpenConnection()
+				db := db.OpenConnection()
 				id, _ := p.Args["id"].(int)
 				userid, _ := p.Args["userid"].(int)
 				title, _ := p.Args["title"].(string)
@@ -147,7 +116,7 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := OpenConnection()
+				db := db.OpenConnection()
 				id, _ := p.Args["id"].(int)
 				row, err := db.Exec("DELETE FROM posts WHERE id =$1", id)
 				if err != nil {
@@ -175,7 +144,7 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 				"id": &graphql.ArgumentConfig{Type: graphql.Int},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := OpenConnection()
+				db := db.OpenConnection()
 				id, _ := p.Args["id"].(int)
 				row := db.QueryRow("SELECT * FROM posts WHERE id = $1", id)
 				defer db.Close()
@@ -192,7 +161,7 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.NewList(postType),
 			Description: "Get All Posts",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := OpenConnection()
+				db := db.OpenConnection()
 				rows, err := db.Query("SELECT * FROM posts")
 				if err != nil {
 					return nil, err
@@ -217,7 +186,7 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 
 func main() {
 
-	CreatePostsTable()
+	db.CreatePostsTable()
 	// CreateCommentsTable()
 
 	router := chi.NewRouter()
