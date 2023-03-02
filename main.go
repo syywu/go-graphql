@@ -45,7 +45,6 @@ import (
 func main() {
 
 	db.CreatePostsTable()
-	// CreateCommentsTable()
 
 	r := chi.NewRouter()
 
@@ -82,12 +81,12 @@ func main() {
 	`
 	// create a params struct which contains a reference to our defined Schema as well as our RequestString request.
 	params := graphql.Params{Schema: schema, RequestString: query}
-	//  execute the request and the results of the request are populated into r
+
 	req := graphql.Do(params)
 	if len(req.Errors) > 0 {
 		log.Fatal("failed to execute graphql operations", req.Errors)
 	}
-	//  Marshal the response into JSON and print it out to our console
+
 	rJSON, _ := json.Marshal(req)
 	fmt.Printf("%s \n", rJSON)
 */
