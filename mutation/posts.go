@@ -66,7 +66,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				db := db.OpenConnection()
 				id, _ := p.Args["id"].(int)
-				row, err := db.Exec("DELETE FROM posts WHERE id =$1", id)
+				row, err := db.Exec("DELETE FROM posts WHERE id =$1 RETURNING id", id)
 				if err != nil {
 					return nil, err
 				}
