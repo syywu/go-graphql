@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/syywu/go-graphql/db"
+	"github.com/syywu/go-graphql/models"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/graphql-go/graphql"
@@ -41,30 +42,11 @@ import (
   },
 */
 
-type Post struct {
-	ID     int    `json:"id"`
-	UserId int    `json:"userid"`
-	Title  string `json:"title"`
-	Body   string `json:"body"`
-}
-
-var postType = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: "Post",
-		Fields: graphql.Fields{
-			"id":     &graphql.Field{Type: graphql.Int},
-			"userId": &graphql.Field{Type: graphql.Int},
-			"title":  &graphql.Field{Type: graphql.String},
-			"body":   &graphql.Field{Type: graphql.String},
-		},
-	},
-)
-
 var mutationType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Mutation",
 	Fields: graphql.Fields{
 		"create": &graphql.Field{
-			Type:        postType,
+			Type:        models.PostType,
 			Description: "Create a New Post",
 			Args: graphql.FieldConfigArgument{
 				"userid": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
@@ -76,7 +58,7 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 				userid, _ := p.Args["userid"].(int)
 				title, _ := p.Args["title"].(string)
 				body, _ := p.Args["body"].(string)
-				var post Post
+				var post models.Post
 				_, err := db.Exec("INSERT INTO posts (userid, title, body) VALUES ($1, $2, $3) RETURNING id", userid, title, body)
 				if err != nil {
 					return nil, err
@@ -86,7 +68,7 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"update": &graphql.Field{
-			Type:        postType,
+			Type:        models.PostType,
 			Description: "Update a Post",
 			Args: graphql.FieldConfigArgument{
 				"id":     &graphql.ArgumentConfig{Type: graphql.Int},
@@ -138,7 +120,7 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
 		"post": &graphql.Field{
-			Type:        postType,
+			Type:        models.PostType,
 			Description: "Get Post by ID",
 			Args: graphql.FieldConfigArgument{
 				"id": &graphql.ArgumentConfig{Type: graphql.Int},
@@ -149,7 +131,7 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 				row := db.QueryRow("SELECT * FROM posts WHERE id = $1", id)
 				defer db.Close()
 
-				var post Post
+				var post models.Post
 				err := row.Scan(&post.ID, &post.UserId, &post.Title, &post.Body)
 				if err != nil {
 					return nil, err
@@ -158,7 +140,7 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"posts": &graphql.Field{
-			Type:        graphql.NewList(postType),
+			Type:        graphql.NewList(models.PostType),
 			Description: "Get All Posts",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				db := db.OpenConnection()
@@ -167,10 +149,10 @@ var queryType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, err
 				}
 				defer db.Close()
-				posts := []Post{}
+				posts := []models.Post{}
 
 				for rows.Next() {
-					var post Post
+					var post models.Post
 					err := rows.Scan(&post.ID, &post.UserId, &post.Title, &post.Body)
 					if err != nil {
 						return nil, err

@@ -4,10 +4,11 @@ import (
 	"log"
 
 	"github.com/graphql-go/graphql"
+	"github.com/syywu/go-graphql/db"
 )
 
 func CreateCommentsTable() {
-	db := OpenConnection()
+	db := db.OpenConnection()
 	const createCommentTable = `
 		CREATE TABLE IF NOT EXISTS comments(
 		id SERIAL PRIMARY KEY,
