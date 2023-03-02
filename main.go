@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -130,13 +131,34 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 				userid, _ := p.Args["userid"].(int)
 				title, _ := p.Args["title"].(string)
 				body, _ := p.Args["body"].(string)
-				row, err := db.Exec("UPDATE posts SET userid = $1, title = $2, body = $3 WHERE id = $4", userid, title, body, id)
+				row, err := db.Exec("UPDATE posts SET userid = $1, title = $2, body = $3 WHERE id = $4 RETURNING *", userid, title, body, id)
 				if err != nil {
 					return nil, err
 				}
 				row.RowsAffected()
 				defer db.Close()
 				return row, nil
+			},
+		},
+		"delete": &graphql.Field{
+			Type:        graphql.Boolean,
+			Description: "Delete a Post",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				db := OpenConnection()
+				id, _ := p.Args["id"].(int)
+				row, err := db.Exec("DELETE FROM posts WHERE id =$1", id)
+				if err != nil {
+					return nil, err
+				}
+				defer db.Close()
+				rowsAffected, _ := row.RowsAffected()
+				if rowsAffected == 0 {
+					return nil, errors.New("post not found")
+				}
+				return true, nil
 			},
 		},
 	},
@@ -214,10 +236,8 @@ func main() {
 	// query- to get back our query
 	query := `
 	{
-  		post(id:1){
-			userId
-			title
-			body
+  		posts{
+			id
 		}
 	}
 	`
