@@ -211,6 +211,37 @@ func main() {
 		},
 	)
 
+	var mutationType = graphql.NewObject(graphql.ObjectConfig{
+		Name: "Mutation",
+		Fields: graphql.Fields{
+			"create": &graphql.Field{
+				Type:        postType,
+				Description: "Create a New Post",
+				Args: graphql.FieldConfigArgument{
+					"userid": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.Int),
+					},
+					"title": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+					"body": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					post := Post{
+						UserId: p.Args["userid"].(int),
+						Title:  p.Args["title"].(string),
+						Body:   p.Args["body"].(string),
+					}
+					allPosts = append(allPosts, post)
+					fmt.Print(allPosts)
+					return allPosts, nil
+				},
+			},
+		},
+	})
+
 	// define our schema- define what fields to return to us for when making queries
 	fields := graphql.Fields{
 		"post": &graphql.Field{
@@ -246,7 +277,7 @@ func main() {
 	// rootQuery- where to start
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
 	// defines a schema config
-	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
+	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery), Mutation: mutationType}
 	// creates schema
 	schema, err := graphql.NewSchema(schemaConfig)
 	if err != nil {
@@ -256,17 +287,17 @@ func main() {
 	// query- to get back our query
 	query := `
 	{
-			post(id:1){
-				Title
-			}
+  		posts{
+			Title
 		}
+	}
 	`
 	// create a params struct which contains a reference to our defined Schema as well as our RequestString request.
 	params := graphql.Params{Schema: schema, RequestString: query}
 	//  execute the request and the results of the request are populated into r
 	r := graphql.Do(params)
 	if len(r.Errors) > 0 {
-		log.Fatal("failed to execute graphql operations", err)
+		log.Fatal("failed to execute graphql operations", r.Errors)
 	}
 	//  Marshal the response into JSON and print it out to our console
 	rJSON, _ := json.Marshal(r)
