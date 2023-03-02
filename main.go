@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/graphql-go/handler"
 	"github.com/syywu/go-graphql/db"
 	"github.com/syywu/go-graphql/mutation"
 	"github.com/syywu/go-graphql/query"
@@ -47,19 +47,31 @@ func main() {
 	db.CreatePostsTable()
 	// CreateCommentsTable()
 
-	router := chi.NewRouter()
+	r := chi.NewRouter()
 
 	// rootQuery- where to start
-	// defines a schema config
-	schemaConfig := graphql.SchemaConfig{Query: query.QueryType, Mutation: mutation.MutationType}
-	// creates schema
-	schema, err := graphql.NewSchema(schemaConfig)
+	// creates schema and defines a schema config
+	schema, err := graphql.NewSchema(graphql.SchemaConfig{
+		Query:    query.QueryType,
+		Mutation: mutation.MutationType,
+	})
 	if err != nil {
 		log.Fatal("failed to create new graphql schema", err)
 	}
 
-	// router.Handle("/graphql", &GraphQLHandler{Schema: schema})
+	graphQLHandler := handler.New(&handler.Config{
+		Schema:   &schema,
+		Pretty:   true,
+		GraphiQL: true,
+	})
 
+	r.Handle("/", graphQLHandler)
+
+	fmt.Println("listening on port 8080")
+	log.Fatal(http.ListenAndServe(":8080", r))
+}
+
+/*
 	// query- to get back our query
 	query := `
 	{
@@ -71,15 +83,11 @@ func main() {
 	// create a params struct which contains a reference to our defined Schema as well as our RequestString request.
 	params := graphql.Params{Schema: schema, RequestString: query}
 	//  execute the request and the results of the request are populated into r
-	r := graphql.Do(params)
-	if len(r.Errors) > 0 {
-		log.Fatal("failed to execute graphql operations", r.Errors)
+	req := graphql.Do(params)
+	if len(req.Errors) > 0 {
+		log.Fatal("failed to execute graphql operations", req.Errors)
 	}
 	//  Marshal the response into JSON and print it out to our console
-	rJSON, _ := json.Marshal(r)
+	rJSON, _ := json.Marshal(req)
 	fmt.Printf("%s \n", rJSON)
-
-	fmt.Println("listening on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
-
-}
+*/
