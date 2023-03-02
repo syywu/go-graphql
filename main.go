@@ -115,6 +115,30 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 				return post, nil
 			},
 		},
+		"update": &graphql.Field{
+			Type:        postType,
+			Description: "Update a Post",
+			Args: graphql.FieldConfigArgument{
+				"id":     &graphql.ArgumentConfig{Type: graphql.Int},
+				"userid": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
+				"title":  &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				"body":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				db := OpenConnection()
+				id, _ := p.Args["id"].(int)
+				userid, _ := p.Args["userid"].(int)
+				title, _ := p.Args["title"].(string)
+				body, _ := p.Args["body"].(string)
+				row, err := db.Exec("UPDATE posts SET userid = $1, title = $2, body = $3 WHERE id = $4", userid, title, body, id)
+				if err != nil {
+					return nil, err
+				}
+				row.RowsAffected()
+				defer db.Close()
+				return row, nil
+			},
+		},
 	},
 })
 
@@ -190,9 +214,10 @@ func main() {
 	// query- to get back our query
 	query := `
 	{
-  		post(id:2){
+  		post(id:1){
 			userId
 			title
+			body
 		}
 	}
 	`
