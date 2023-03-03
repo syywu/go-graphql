@@ -52,7 +52,10 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				if err != nil {
 					return nil, err
 				}
-				row.RowsAffected()
+				rowsAffected, _ := row.RowsAffected()
+				if rowsAffected == 0 {
+					return nil, errors.New("post not found")
+				}
 				defer db.Close()
 				return row, nil
 			},
