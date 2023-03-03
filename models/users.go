@@ -32,13 +32,23 @@ type Company struct {
 	Bs          string `json:"bs"`
 }
 
-var companyType = graphql.NewObject(
+var CompanyType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Company",
 		Fields: graphql.Fields{
 			"name":        &graphql.Field{Type: graphql.String},
 			"catchphrase": &graphql.Field{Type: graphql.String},
 			"bs":          &graphql.Field{Type: graphql.String},
+		},
+	},
+)
+
+var GeoType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Geo",
+		Fields: graphql.Fields{
+			"lat": &graphql.Field{Type: graphql.String},
+			"lng": &graphql.Field{Type: graphql.String},
 		},
 	},
 )
