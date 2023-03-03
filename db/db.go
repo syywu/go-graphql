@@ -24,9 +24,9 @@ func CreatePostsTable() {
 	const createPostTable = `
 	CREATE TABLE IF NOT EXISTS posts(
 		id SERIAL PRIMARY KEY,
-		userId INT NOT NULL,
 		title TEXT NOT NULL,
-		body TEXT
+		body TEXT,
+		userid INT NOT NULL REFERENCES users(id)
 	);
 	`
 	_, err := db.Exec(createPostTable)
@@ -35,4 +35,32 @@ func CreatePostsTable() {
 	}
 	defer db.Close()
 
+}
+
+func CreateUsersTable() {
+	db := OpenConnection()
+	const createUsersTable = `
+	CREATE TABLE IF NOT EXISTS users(
+		id SERIAL PRIMARY KEY,
+    	name VARCHAR(255) NOT NULL,
+    	username VARCHAR(255) NOT NULL,
+    	email VARCHAR(255) NOT NULL,
+   		address_street VARCHAR(255) NOT NULL,
+   		address_suite VARCHAR(255) NOT NULL,
+    	address_city VARCHAR(255) NOT NULL,
+    	address_zipcode VARCHAR(255) NOT NULL,
+    	address_geo_lat VARCHAR(255) NOT NULL,
+    	address_geo_lng VARCHAR(255) NOT NULL,
+    	phone VARCHAR(255) NOT NULL,
+    	website VARCHAR(255) NOT NULL,
+   		company_name VARCHAR(255) NOT NULL,
+    	company_catch_phrase VARCHAR(255) NOT NULL,
+    	company_bs VARCHAR(255) NOT NULL
+	)
+	`
+	_, err := db.Exec(createUsersTable)
+	if err != nil {
+		log.Fatal("cannot create users table", err)
+	}
+	defer db.Close()
 }

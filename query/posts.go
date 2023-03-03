@@ -40,6 +40,7 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, err
 				}
 				defer db.Close()
+				defer rows.Close()
 				posts := []models.Post{}
 
 				for rows.Next() {
@@ -50,7 +51,6 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 					}
 					posts = append(posts, post)
 				}
-				defer rows.Close()
 				return posts, nil
 			},
 		},

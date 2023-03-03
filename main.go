@@ -47,6 +47,7 @@ type Company struct {
 
 func main() {
 
+	db.CreateUsersTable()
 	db.CreatePostsTable()
 
 	r := chi.NewRouter()
