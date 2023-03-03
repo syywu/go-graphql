@@ -1,5 +1,7 @@
 package models
 
+import "github.com/graphql-go/graphql"
+
 type User struct {
 	ID       int     `json:"id"`
 	Name     string  `json:"name"`
@@ -29,3 +31,14 @@ type Company struct {
 	Catchphrase string `json:"catchphrase"`
 	Bs          string `json:"bs"`
 }
+
+var companyType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Company",
+		Fields: graphql.Fields{
+			"name":        &graphql.Field{Type: graphql.String},
+			"catchphrase": &graphql.Field{Type: graphql.String},
+			"bs":          &graphql.Field{Type: graphql.String},
+		},
+	},
+)
