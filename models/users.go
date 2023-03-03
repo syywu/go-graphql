@@ -65,3 +65,19 @@ var AddressType = graphql.NewObject(
 		},
 	},
 )
+
+var UserType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "User",
+		Fields: graphql.Fields{
+			"id":       &graphql.Field{Type: graphql.Int},
+			"name":     &graphql.Field{Type: graphql.String},
+			"username": &graphql.Field{Type: graphql.String},
+			"email":    &graphql.Field{Type: graphql.String},
+			"address":  &graphql.Field{Type: AddressType},
+			"phone":    &graphql.Field{Type: graphql.String},
+			"website":  &graphql.Field{Type: graphql.String},
+			"company":  &graphql.Field{Type: CompanyType},
+		},
+	},
+)
