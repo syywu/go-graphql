@@ -52,3 +52,16 @@ var GeoType = graphql.NewObject(
 		},
 	},
 )
+
+var AddressType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Address",
+		Fields: graphql.Fields{
+			"street":  &graphql.Field{Type: graphql.String},
+			"suite":   &graphql.Field{Type: graphql.String},
+			"city":    &graphql.Field{Type: graphql.String},
+			"zipcode": &graphql.Field{Type: graphql.String},
+			"geo":     &graphql.Field{Type: GeoType},
+		},
+	},
+)
