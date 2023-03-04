@@ -14,16 +14,16 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        models.PostType,
 			Description: "Get Post by ID",
 			Args: graphql.FieldConfigArgument{
-				"id": &graphql.ArgumentConfig{Type: graphql.Int},
+				"id": &graphql.ArgumentConfig{Type: graphql.ID},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				db := db.OpenConnection()
-				id, _ := p.Args["id"].(int)
+				id, _ := p.Args["id"].(string)
 				row := db.QueryRow("SELECT * FROM posts WHERE id = $1", id)
 				defer db.Close()
 
 				var post models.Post
-				err := row.Scan(&post.ID, &post.UserId, &post.Title, &post.Body)
+				err := row.Scan(&post.ID, &post.Title, &post.Body, &post.UserId)
 				if err != nil {
 					return nil, err
 				}
@@ -58,10 +58,10 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        models.UserType,
 			Description: "Get User by ID",
 			Args: graphql.FieldConfigArgument{
-				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
+				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				id, _ := p.Args["id"].(int)
+				id, _ := p.Args["id"].(string)
 				db := db.OpenConnection()
 				user := models.User{}
 				err := db.QueryRow("SELECT * FROM users WHERE id = $1", id).Scan(&user.ID, &user.Name, &user.Username, &user.Email, &user.Address.Street, &user.Address.Suite, &user.Address.City, &user.Address.Zipcode, &user.Address.Geo.Lat, &user.Address.Geo.Lng, &user.Phone, &user.Website, &user.Company.Name, &user.Company.Catchphrase, &user.Company.Bs)

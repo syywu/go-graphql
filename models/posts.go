@@ -1,7 +1,7 @@
 package models
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/graphql-go/graphql"
 	"github.com/syywu/go-graphql/db"
@@ -9,32 +9,37 @@ import (
 
 type Post struct {
 	ID     int    `json:"id"`
-	UserId int    `json:"userid"`
 	Title  string `json:"title"`
 	Body   string `json:"body"`
+	UserId int    `json:"userid"`
 }
 
 var PostType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Post",
 		Fields: graphql.Fields{
-			"id":    &graphql.Field{Type: graphql.Int},
+			"id":    &graphql.Field{Type: graphql.ID},
 			"title": &graphql.Field{Type: graphql.String},
 			"body":  &graphql.Field{Type: graphql.String},
-			"userId": &graphql.Field{
+			"user": &graphql.Field{
 				Type: UserType,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					if parent, ok := p.Source.(*Post); ok {
-						user := &User{}
-						db := db.OpenConnection()
-						err := db.QueryRow("SELECT * FROM users WHERE id = $1", parent.UserId).Scan(&user.Name, &user.Username, &user.Email, &user.Address, &user.Phone, &user.Website, &user.Company)
-						if err != nil {
-							log.Fatal(err)
-						}
-						defer db.Close()
-						return user, nil
+					db := db.OpenConnection()
+					parent, ok := p.Source.(*Post)
+					if !ok {
+						return nil, fmt.Errorf("invalid parent object")
 					}
-					return nil, nil
+					if parent.UserId == 0 {
+						return nil, fmt.Errorf("invalid parent user ID")
+					}
+					user := User{}
+					row := db.QueryRow("SELECT id, name, username, email FROM users WHERE id = $1", parent.UserId)
+					defer db.Close()
+					err := row.Scan(&user.ID, &user.Name, &user.Username, &user.Email)
+					if err != nil {
+						return nil, err
+					}
+					return user, nil
 				},
 			},
 		},
