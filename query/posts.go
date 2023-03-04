@@ -54,6 +54,24 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 				return posts, nil
 			},
 		},
+		"user": &graphql.Field{
+			Type:        models.UserType,
+			Description: "Get User by ID",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, _ := p.Args["id"].(int)
+				db := db.OpenConnection()
+				user := models.User{}
+				err := db.QueryRow("SELECT * FROM users WHERE id = $1", id).Scan(&user.ID, &user.Name, &user.Username, &user.Email, &user.Address.Street, &user.Address.Suite, &user.Address.City, &user.Address.Zipcode, &user.Address.Geo.Lat, &user.Address.Geo.Lng, &user.Phone, &user.Website, &user.Company.Name, &user.Company.Catchphrase, &user.Company.Bs)
+				if err != nil {
+					return nil, err
+				}
+				defer db.Close()
+				return user, nil
+			},
+		},
 		"users": &graphql.Field{
 			Type:        graphql.NewList(models.UserType),
 			Description: "Get All Users",
