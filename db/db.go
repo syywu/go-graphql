@@ -26,7 +26,7 @@ func CreatePostsTable() {
 		id SERIAL PRIMARY KEY,
 		title TEXT NOT NULL,
 		body TEXT,
-		userid INT NOT NULL REFERENCES users(id)
+		userid INT NOT NULL
 	);
 	`
 	_, err := db.Exec(createPostTable)
