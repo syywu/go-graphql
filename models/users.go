@@ -32,13 +32,30 @@ type Company struct {
 	Bs          string `json:"bs"`
 }
 
-var CompanyType = graphql.NewObject(
+var UserType = graphql.NewObject(
 	graphql.ObjectConfig{
-		Name: "Company",
+		Name: "User",
 		Fields: graphql.Fields{
-			"name":        &graphql.Field{Type: graphql.String},
-			"catchphrase": &graphql.Field{Type: graphql.String},
-			"bs":          &graphql.Field{Type: graphql.String},
+			"id":       &graphql.Field{Type: graphql.Int},
+			"name":     &graphql.Field{Type: graphql.String},
+			"username": &graphql.Field{Type: graphql.String},
+			"email":    &graphql.Field{Type: graphql.String},
+			"address":  &graphql.Field{Type: AddressType},
+			"phone":    &graphql.Field{Type: graphql.String},
+			"website":  &graphql.Field{Type: graphql.String},
+			"company":  &graphql.Field{Type: CompanyType},
+		},
+	},
+)
+var AddressType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Address",
+		Fields: graphql.Fields{
+			"street":  &graphql.Field{Type: graphql.String},
+			"suite":   &graphql.Field{Type: graphql.String},
+			"city":    &graphql.Field{Type: graphql.String},
+			"zipcode": &graphql.Field{Type: graphql.String},
+			"geo":     &graphql.Field{Type: GeoType},
 		},
 	},
 )
@@ -53,31 +70,13 @@ var GeoType = graphql.NewObject(
 	},
 )
 
-var AddressType = graphql.NewObject(
+var CompanyType = graphql.NewObject(
 	graphql.ObjectConfig{
-		Name: "Address",
+		Name: "Company",
 		Fields: graphql.Fields{
-			"street":  &graphql.Field{Type: graphql.String},
-			"suite":   &graphql.Field{Type: graphql.String},
-			"city":    &graphql.Field{Type: graphql.String},
-			"zipcode": &graphql.Field{Type: graphql.String},
-			"geo":     &graphql.Field{Type: GeoType},
-		},
-	},
-)
-
-var UserType = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: "User",
-		Fields: graphql.Fields{
-			"id":       &graphql.Field{Type: graphql.Int},
-			"name":     &graphql.Field{Type: graphql.String},
-			"username": &graphql.Field{Type: graphql.String},
-			"email":    &graphql.Field{Type: graphql.String},
-			"address":  &graphql.Field{Type: AddressType},
-			"phone":    &graphql.Field{Type: graphql.String},
-			"website":  &graphql.Field{Type: graphql.String},
-			"company":  &graphql.Field{Type: CompanyType},
+			"name":        &graphql.Field{Type: graphql.String},
+			"catchphrase": &graphql.Field{Type: graphql.String},
+			"bs":          &graphql.Field{Type: graphql.String},
 		},
 	},
 )

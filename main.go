@@ -5,45 +5,31 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/syywu/go-graphql/db"
 	"github.com/syywu/go-graphql/mutation"
 	"github.com/syywu/go-graphql/query"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/graphql-go/graphql"
 	_ "github.com/lib/pq"
 )
 
-type User struct {
-	ID       int     `json:"id"`
-	Name     string  `json:"name"`
-	Username string  `json:"username"`
-	Email    string  `json:"email"`
-	Address  Address `json:"address"`
-	Phone    string  `json:"phone"`
-	Website  string  `json:"website"`
-	Company  Company `json:"company"`
-}
+// func populate() []models.User {
+// 	geo := &models.Geo{Lat: "37484", Lng: "369864"}
+// 	address := &models.Address{Street: "Rotherhithe Street", Suite: "200", City: "London", Zipcode: "SE6 1NZ", Geo: *geo}
+// 	company := &models.Company{Name: "ahbakjf", Catchphrase: "hdsu", Bs: "jbfibgf"}
+// 	user := models.User{Name: "John", Username: "jdh23", Email: "jgfgfusdc", Address: *address, Phone: "637971333", Website: "jahfdkgbuafdua.com", Company: *company}
 
-type Address struct {
-	Street  string `json:"street"`
-	Suite   string `json:"suite"`
-	City    string `json:"city"`
-	Zipcode string `json:"zipcode"`
-	Geo     Geo    `json:"geo"`
-}
+// 	geo2 := &models.Geo{Lat: "2222", Lng: "37372"}
+// 	address2 := &models.Address{Street: "cdslgofuagod", Suite: "200", City: "Swansea", Zipcode: "SE74 1MZ", Geo: *geo2}
+// 	company2 := &models.Company{Name: "Atos", Catchphrase: "djaffaol", Bs: "dhkcfugakd"}
+// 	user2 := models.User{Name: "jfhwauf", Username: "gd76", Email: "ajdda@jshc.com", Address: *address2, Phone: "726924222", Website: "jhfgas.com", Company: *company2}
+// 	var users []models.User
+// 	users = append(users, user, user2)
 
-type Geo struct {
-	Lat string `json:"lat"`
-	Lng string `json:"lng"`
-}
-
-type Company struct {
-	Name        string `json:"name"`
-	Catchphrase string `json:"catchphrase"`
-	Bs          string `json:"bs"`
-}
+// 	return users
+// }
 
 func main() {
 
@@ -51,7 +37,16 @@ func main() {
 	db.CreatePostsTable()
 
 	r := chi.NewRouter()
-
+	// allUsers := populate()
+	// fields := graphql.Fields{
+	// 	"users": &graphql.Field{
+	// 		Type:        graphql.NewList(models.UserType),
+	// 		Description: "Get all users",
+	// 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+	// 			return allUsers, nil
+	// 		},
+	// 	},
+	// }
 	// rootQuery- where to start
 	// creates schema and defines a schema config
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
@@ -72,25 +67,42 @@ func main() {
 
 	fmt.Println("listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
-}
+	/*
+		// query- to get back our query
+		schema, err := graphql.NewSchema(graphql.SchemaConfig{
+			Query: graphql.NewObject(graphql.ObjectConfig{Name: "Root", Fields: fields}),
+		})
 
-/*
-	// query- to get back our query
-	query := `
-	{
-		posts{
-			id
+		if err != nil {
+			log.Fatal(err)
 		}
-	}
-	`
-	// create a params struct which contains a reference to our defined Schema as well as our RequestString request.
-	params := graphql.Params{Schema: schema, RequestString: query}
 
-	req := graphql.Do(params)
-	if len(req.Errors) > 0 {
-		log.Fatal("failed to execute graphql operations", req.Errors)
-	}
+		query := `
+		{
+			users{
+				name
+				address{
+					geo{
+						lat
+						lng
+					}
+				}
+				company{
+					name
+					bs
+				}
+			}
+		}
+		`
+		// create a params struct which contains a reference to our defined Schema as well as our RequestString request.
+		params := graphql.Params{Schema: schema, RequestString: query}
 
-	rJSON, _ := json.Marshal(req)
-	fmt.Printf("%s \n", rJSON)
-*/
+		req := graphql.Do(params)
+		if len(req.Errors) > 0 {
+			log.Fatal("failed to execute graphql operations", req.Errors)
+		}
+
+		rJSON, _ := json.Marshal(req)
+		fmt.Printf("%s \n", rJSON)
+	*/
+}

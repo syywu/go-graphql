@@ -11,7 +11,30 @@ import (
 var MutationType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Mutation",
 	Fields: graphql.Fields{
-		"create": &graphql.Field{
+		"createUser": &graphql.Field{
+			Type:        models.UserType,
+			Description: "Create a New User",
+			Args: graphql.FieldConfigArgument{
+				"name":     &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				"username": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				"email":    &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				"address":  &graphql.ArgumentConfig{Type: graphql.NewNonNull(models.AddressType)},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				db := db.OpenConnection()
+				userid, _ := p.Args["userid"].(int)
+				title, _ := p.Args["title"].(string)
+				body, _ := p.Args["body"].(string)
+				var post models.Post
+				_, err := db.Exec("INSERT INTO posts (userid, title, body) VALUES ($1, $2, $3) RETURNING id", userid, title, body)
+				if err != nil {
+					return nil, err
+				}
+				defer db.Close()
+				return post, nil
+			},
+		},
+		"createPost": &graphql.Field{
 			Type:        models.PostType,
 			Description: "Create a New Post",
 			Args: graphql.FieldConfigArgument{
