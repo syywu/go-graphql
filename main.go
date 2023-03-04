@@ -37,16 +37,7 @@ func main() {
 	db.CreatePostsTable()
 
 	r := chi.NewRouter()
-	// allUsers := populate()
-	// fields := graphql.Fields{
-	// 	"users": &graphql.Field{
-	// 		Type:        graphql.NewList(models.UserType),
-	// 		Description: "Get all users",
-	// 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-	// 			return allUsers, nil
-	// 		},
-	// 	},
-	// }
+
 	// rootQuery- where to start
 	// creates schema and defines a schema config
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{

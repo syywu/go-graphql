@@ -77,7 +77,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				return post, nil
 			},
 		},
-		"update": &graphql.Field{
+		"updatePost": &graphql.Field{
 			Type:        models.PostType,
 			Description: "Update a Post",
 			Args: graphql.FieldConfigArgument{
@@ -104,7 +104,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				return row, nil
 			},
 		},
-		"delete": &graphql.Field{
+		"deletePost": &graphql.Field{
 			Type:        graphql.Boolean,
 			Description: "Delete a Post",
 			Args: graphql.FieldConfigArgument{
