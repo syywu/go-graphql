@@ -141,3 +141,21 @@ func UpdateUser(p graphql.ResolveParams) (interface{}, error) {
 	}
 	return row, nil
 }
+
+func UpdatePost(p graphql.ResolveParams) (interface{}, error) {
+	db := db.OpenConnection()
+	id, _ := p.Args["id"].(string)
+	userid, _ := p.Args["userid"].(string)
+	title, _ := p.Args["title"].(string)
+	body, _ := p.Args["body"].(string)
+	row, err := db.Exec("UPDATE posts SET title = $1, body = $2, userid = $3 WHERE id = $4 RETURNING *", title, body, userid, id)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+	rowsAffected, _ := row.RowsAffected()
+	if rowsAffected == 0 {
+		return nil, errors.New("post not found")
+	}
+	return row, nil
+}
