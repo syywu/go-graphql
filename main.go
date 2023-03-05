@@ -58,42 +58,43 @@ func main() {
 
 	fmt.Println("listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
-	/*
-		// query- to get back our query
-		schema, err := graphql.NewSchema(graphql.SchemaConfig{
-			Query: graphql.NewObject(graphql.ObjectConfig{Name: "Root", Fields: fields}),
-		})
+}
 
-		if err != nil {
-			log.Fatal(err)
-		}
+/*
+	// query- to get back our query
+	schema, err := graphql.NewSchema(graphql.SchemaConfig{
+		Query: graphql.NewObject(graphql.ObjectConfig{Name: "Root", Fields: fields}),
+	})
 
-		query := `
-		{
-			users{
-				name
-				address{
-					geo{
-						lat
-						lng
-					}
-				}
-				company{
-					name
-					bs
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	query := `
+	{
+		users{
+			name
+			address{
+				geo{
+					lat
+					lng
 				}
 			}
+			company{
+				name
+				bs
+			}
 		}
-		`
-		// create a params struct which contains a reference to our defined Schema as well as our RequestString request.
-		params := graphql.Params{Schema: schema, RequestString: query}
+	}
+	`
+	// create a params struct which contains a reference to our defined Schema as well as our RequestString request.
+	params := graphql.Params{Schema: schema, RequestString: query}
 
-		req := graphql.Do(params)
-		if len(req.Errors) > 0 {
-			log.Fatal("failed to execute graphql operations", req.Errors)
-		}
+	req := graphql.Do(params)
+	if len(req.Errors) > 0 {
+		log.Fatal("failed to execute graphql operations", req.Errors)
+	}
 
-		rJSON, _ := json.Marshal(req)
-		fmt.Printf("%s \n", rJSON)
-	*/
-}
+	rJSON, _ := json.Marshal(req)
+	fmt.Printf("%s \n", rJSON)
+*/

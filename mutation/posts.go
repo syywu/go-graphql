@@ -121,7 +121,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				defer db.Close()
 				rowsAffected, _ := row.RowsAffected()
 				if rowsAffected == 0 {
-					return nil, errors.New("post not found")
+					return nil, errors.New("user not found")
 				}
 				return row, nil
 			},
@@ -153,6 +153,27 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				return row, nil
 			},
 		},
+		"deleteUser": &graphql.Field{
+			Type:        graphql.Boolean,
+			Description: "Delete a Post",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				db := db.OpenConnection()
+				id, _ := p.Args["id"].(string)
+				row, err := db.Exec("DELETE FROM users WHERE id =$1 RETURNING id", id)
+				if err != nil {
+					return nil, err
+				}
+				defer db.Close()
+				rowsAffected, _ := row.RowsAffected()
+				if rowsAffected == 0 {
+					return nil, errors.New("user not found")
+				}
+				return true, nil
+			},
+		},
 		"deletePost": &graphql.Field{
 			Type:        graphql.Boolean,
 			Description: "Delete a Post",
@@ -175,4 +196,5 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 	},
-})
+},
+)
