@@ -43,17 +43,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				"userid": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := db.OpenConnection()
-				title, _ := p.Args["title"].(string)
-				body, _ := p.Args["body"].(string)
-				userid, _ := p.Args["userid"].(string)
-				var post models.Post
-				_, err := db.Exec("INSERT INTO posts (title, body, userid) VALUES ($1, $2, $3) RETURNING id", title, body, userid)
-				if err != nil {
-					return nil, err
-				}
-				defer db.Close()
-				return post, nil
+				return models.CreatePost(p)
 			},
 		},
 		"updateUser": &graphql.Field{
