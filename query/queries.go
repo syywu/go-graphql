@@ -34,24 +34,7 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.NewList(models.PostType),
 			Description: "Get All Posts",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := db.OpenConnection()
-				rows, err := db.Query("SELECT * FROM posts")
-				if err != nil {
-					return nil, err
-				}
-				defer db.Close()
-				defer rows.Close()
-				posts := []models.Post{}
-
-				for rows.Next() {
-					var post models.Post
-					err := rows.Scan(&post.ID, &post.Title, &post.Body, &post.UserId)
-					if err != nil {
-						return nil, err
-					}
-					posts = append(posts, post)
-				}
-				return posts, nil
+				return models.GetPosts(p)
 			},
 		},
 		"user": &graphql.Field{
@@ -76,23 +59,7 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.NewList(models.UserType),
 			Description: "Get All Users",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := db.OpenConnection()
-				rows, err := db.Query("SELECT * FROM users")
-				if err != nil {
-					return nil, err
-				}
-				defer db.Close()
-				defer rows.Close()
-				users := []models.User{}
-				for rows.Next() {
-					user := models.User{}
-					err := rows.Scan(&user.ID, &user.Name, &user.Username, &user.Email, &user.Address.Street, &user.Address.Suite, &user.Address.City, &user.Address.Zipcode, &user.Address.Geo.Lat, &user.Address.Geo.Lng, &user.Phone, &user.Website, &user.Company.Name, &user.Company.Catchphrase, &user.Company.Bs)
-					if err != nil {
-						return nil, err
-					}
-					users = append(users, user)
-				}
-				return users, nil
+				return models.GetUsers(p)
 			},
 		},
 	},

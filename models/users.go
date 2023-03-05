@@ -1,6 +1,11 @@
 package models
 
-import "github.com/graphql-go/graphql"
+import (
+	"fmt"
+
+	"github.com/graphql-go/graphql"
+	"github.com/syywu/go-graphql/db"
+)
 
 type User struct {
 	ID       int     `json:"id"`
@@ -44,6 +49,34 @@ var UserType = graphql.NewObject(
 			"phone":    &graphql.Field{Type: graphql.String},
 			"website":  &graphql.Field{Type: graphql.String},
 			"company":  &graphql.Field{Type: CompanyType},
+			"post": &graphql.Field{
+				Type: graphql.NewList(PostType),
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					parent, ok := p.Source.(*User)
+					fmt.Print(parent.ID)
+					if ok {
+						db := db.OpenConnection()
+						rows, err := db.Query("SELECT * FROM posts WHERE userid = $1", parent.ID)
+						if err != nil {
+							return nil, err
+						}
+						defer db.Close()
+						defer rows.Close()
+						posts := []Post{}
+
+						for rows.Next() {
+							var post Post
+							err := rows.Scan(&post.ID, &post.Title, &post.Body, &post.UserId)
+							if err != nil {
+								return nil, err
+							}
+							posts = append(posts, post)
+						}
+						return posts, nil
+					}
+					return nil, nil
+				},
+			},
 		},
 	},
 )
