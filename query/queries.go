@@ -1,8 +1,6 @@
 package query
 
 import (
-	"fmt"
-
 	"github.com/graphql-go/graphql"
 	"github.com/syywu/go-graphql/models"
 )
@@ -35,7 +33,6 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				fmt.Print(p.Source.(models.User))
 				return models.GetUserByID(p)
 			},
 		},

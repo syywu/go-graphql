@@ -1,10 +1,7 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/graphql-go/graphql"
-	"github.com/syywu/go-graphql/db"
 )
 
 type User struct {
@@ -16,6 +13,7 @@ type User struct {
 	Phone    string  `json:"phone"`
 	Website  string  `json:"website"`
 	Company  Company `json:"company"`
+	Post     Post    `json:"post"`
 }
 
 type Address struct {
@@ -49,34 +47,35 @@ var UserType = graphql.NewObject(
 			"phone":    &graphql.Field{Type: graphql.String},
 			"website":  &graphql.Field{Type: graphql.String},
 			"company":  &graphql.Field{Type: CompanyType},
-			"post": &graphql.Field{
-				Type: graphql.NewList(PostType),
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					fmt.Print(p.Info)
-					parent, ok := p.Source.(*User)
-					if ok {
-						db := db.OpenConnection()
-						rows, err := db.Query("SELECT * FROM posts WHERE userid = $1", parent.ID)
-						if err != nil {
-							return nil, err
-						}
-						defer db.Close()
-						defer rows.Close()
-						posts := []Post{}
+			// "post": &graphql.Field{
+			// 	Type: graphql.NewList(PostType),
+			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			// 	// Cast the source object to the expected type
+			// 	parent, ok := p.Source.(*User)
 
-						for rows.Next() {
-							var post Post
-							err := rows.Scan(&post.ID, &post.Title, &post.Body, &post.UserId)
-							if err != nil {
-								return nil, err
-							}
-							posts = append(posts, post)
-						}
-						return posts, nil
-					}
-					return nil, nil
-				},
-			},
+			// 	if !ok {
+			// 		return nil, fmt.Errorf("invalid user source: %v", p.Source)
+			// 	}
+			// 	db := db.OpenConnection()
+			// 	rows, err := db.Query("SELECT * FROM posts WHERE userid = $1", parent.ID)
+			// 	if err != nil {
+			// 		return nil, err
+			// 	}
+			// 	defer db.Close()
+			// 	defer rows.Close()
+			// 	posts := []Post{}
+
+			// 	for rows.Next() {
+			// 		var post Post
+			// 		err := rows.Scan(&post.ID, &post.Title, &post.Body, &post.UserId)
+			// 		if err != nil {
+			// 			return nil, err
+			// 		}
+			// 		posts = append(posts, post)
+			// 	}
+			// 	return posts, nil
+			// },
+			// },
 		},
 	},
 )
