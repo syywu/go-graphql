@@ -5,6 +5,20 @@ import (
 	"github.com/syywu/go-graphql/db"
 )
 
+func GetPostByID(p graphql.ResolveParams) (interface{}, error) {
+	db := db.OpenConnection()
+	id, _ := p.Args["id"].(string)
+	row := db.QueryRow("SELECT * FROM posts WHERE id = $1", id)
+	defer db.Close()
+
+	var post Post
+	err := row.Scan(&post.ID, &post.Title, &post.Body, &post.UserId)
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
+}
+
 func GetPosts(p graphql.ResolveParams) (interface{}, error) {
 	db := db.OpenConnection()
 	rows, err := db.Query("SELECT * FROM posts")
@@ -44,4 +58,16 @@ func GetUsers(p graphql.ResolveParams) (interface{}, error) {
 		users = append(users, user)
 	}
 	return users, nil
+}
+
+func GetUserByID(p graphql.ResolveParams) (interface{}, error) {
+	id, _ := p.Args["id"].(string)
+	db := db.OpenConnection()
+	user := User{}
+	err := db.QueryRow("SELECT * FROM users WHERE id = $1", id).Scan(&user.ID, &user.Name, &user.Username, &user.Email, &user.Address.Street, &user.Address.Suite, &user.Address.City, &user.Address.Zipcode, &user.Address.Geo.Lat, &user.Address.Geo.Lng, &user.Phone, &user.Website, &user.Company.Name, &user.Company.Catchphrase, &user.Company.Bs)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+	return user, nil
 }

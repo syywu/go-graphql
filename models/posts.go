@@ -15,10 +15,10 @@ var PostType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Post",
 		Fields: graphql.Fields{
-			"id":    &graphql.Field{Type: graphql.ID},
-			"title": &graphql.Field{Type: graphql.String},
-			"body":  &graphql.Field{Type: graphql.String},
-			// "userid": &graphql.Field{Type: graphql.ID},
+			"id":     &graphql.Field{Type: graphql.ID},
+			"title":  &graphql.Field{Type: graphql.String},
+			"body":   &graphql.Field{Type: graphql.String},
+			"userid": &graphql.Field{Type: graphql.ID},
 			// "user": &graphql.Field{
 			// 	Type: UserType,
 			// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {

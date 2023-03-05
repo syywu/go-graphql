@@ -52,8 +52,8 @@ var UserType = graphql.NewObject(
 			"post": &graphql.Field{
 				Type: graphql.NewList(PostType),
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					fmt.Print(p.Info)
 					parent, ok := p.Source.(*User)
-					fmt.Print(parent.ID)
 					if ok {
 						db := db.OpenConnection()
 						rows, err := db.Query("SELECT * FROM posts WHERE userid = $1", parent.ID)

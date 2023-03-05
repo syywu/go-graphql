@@ -133,12 +133,12 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				"id":     &graphql.ArgumentConfig{Type: graphql.ID},
 				"title":  &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 				"body":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
-				"userid": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
+				"userid": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				db := db.OpenConnection()
 				id, _ := p.Args["id"].(string)
-				userid, _ := p.Args["userid"].(int)
+				userid, _ := p.Args["userid"].(string)
 				title, _ := p.Args["title"].(string)
 				body, _ := p.Args["body"].(string)
 				row, err := db.Exec("UPDATE posts SET title = $1, body = $2, userid = $3 WHERE id = $4 RETURNING *", title, body, id, userid)
