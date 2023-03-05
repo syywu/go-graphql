@@ -159,3 +159,33 @@ func UpdatePost(p graphql.ResolveParams) (interface{}, error) {
 	}
 	return row, nil
 }
+
+func DeleteUser(p graphql.ResolveParams) (interface{}, error) {
+	db := db.OpenConnection()
+	id, _ := p.Args["id"].(string)
+	row, err := db.Exec("DELETE FROM users WHERE id =$1 RETURNING id", id)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+	rowsAffected, _ := row.RowsAffected()
+	if rowsAffected == 0 {
+		return nil, errors.New("user not found")
+	}
+	return true, nil
+}
+
+func DeletetPost(p graphql.ResolveParams) (interface{}, error) {
+	db := db.OpenConnection()
+	id, _ := p.Args["id"].(string)
+	row, err := db.Exec("DELETE FROM posts WHERE id =$1 RETURNING id", id)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+	rowsAffected, _ := row.RowsAffected()
+	if rowsAffected == 0 {
+		return nil, errors.New("post not found")
+	}
+	return true, nil
+}

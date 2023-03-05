@@ -1,10 +1,7 @@
 package mutation
 
 import (
-	"errors"
-
 	"github.com/graphql-go/graphql"
-	"github.com/syywu/go-graphql/db"
 	"github.com/syywu/go-graphql/models"
 )
 
@@ -90,18 +87,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := db.OpenConnection()
-				id, _ := p.Args["id"].(string)
-				row, err := db.Exec("DELETE FROM users WHERE id =$1 RETURNING id", id)
-				if err != nil {
-					return nil, err
-				}
-				defer db.Close()
-				rowsAffected, _ := row.RowsAffected()
-				if rowsAffected == 0 {
-					return nil, errors.New("user not found")
-				}
-				return true, nil
+				return models.DeleteUser(p)
 			},
 		},
 		"deletePost": &graphql.Field{
@@ -111,18 +97,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				db := db.OpenConnection()
-				id, _ := p.Args["id"].(string)
-				row, err := db.Exec("DELETE FROM posts WHERE id =$1 RETURNING id", id)
-				if err != nil {
-					return nil, err
-				}
-				defer db.Close()
-				rowsAffected, _ := row.RowsAffected()
-				if rowsAffected == 0 {
-					return nil, errors.New("post not found")
-				}
-				return true, nil
+				return models.DeletetPost(p)
 			},
 		},
 	},
