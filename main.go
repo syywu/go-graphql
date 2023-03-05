@@ -15,22 +15,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// func populate() []models.User {
-// 	geo := &models.Geo{Lat: "37484", Lng: "369864"}
-// 	address := &models.Address{Street: "Rotherhithe Street", Suite: "200", City: "London", Zipcode: "SE6 1NZ", Geo: *geo}
-// 	company := &models.Company{Name: "ahbakjf", Catchphrase: "hdsu", Bs: "jbfibgf"}
-// 	user := models.User{Name: "John", Username: "jdh23", Email: "jgfgfusdc", Address: *address, Phone: "637971333", Website: "jahfdkgbuafdua.com", Company: *company}
-
-// 	geo2 := &models.Geo{Lat: "2222", Lng: "37372"}
-// 	address2 := &models.Address{Street: "cdslgofuagod", Suite: "200", City: "Swansea", Zipcode: "SE74 1MZ", Geo: *geo2}
-// 	company2 := &models.Company{Name: "Atos", Catchphrase: "djaffaol", Bs: "dhkcfugakd"}
-// 	user2 := models.User{Name: "jfhwauf", Username: "gd76", Email: "ajdda@jshc.com", Address: *address2, Phone: "726924222", Website: "jhfgas.com", Company: *company2}
-// 	var users []models.User
-// 	users = append(users, user, user2)
-
-// 	return users
-// }
-
 func main() {
 
 	db.CreateUsersTable()
