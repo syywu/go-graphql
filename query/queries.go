@@ -30,7 +30,7 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        models.UserType,
 			Description: "Get User by ID",
 			Args: graphql.FieldConfigArgument{
-				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
+				"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return models.GetUserByID(p)

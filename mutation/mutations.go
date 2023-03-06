@@ -37,7 +37,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 			Args: graphql.FieldConfigArgument{
 				"title":  &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 				"body":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
-				"userid": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
+				"userid": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return models.CreatePost(p)
@@ -74,7 +74,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				"id":     &graphql.ArgumentConfig{Type: graphql.ID},
 				"title":  &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 				"body":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
-				"userid": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
+				"userid": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return models.UpdatePost(p)

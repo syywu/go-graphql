@@ -8,7 +8,7 @@ import (
 )
 
 type Post struct {
-	ID     int    `json:"id"`
+	ID     string `json:"id"`
 	Title  string `json:"title"`
 	Body   string `json:"body"`
 	Userid int    `json:"userid"`
@@ -18,7 +18,15 @@ var PostType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Post",
 		Fields: graphql.Fields{
-			"id":     &graphql.Field{Type: graphql.ID},
+			"id": &graphql.Field{
+				Type: graphql.ID,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					if post, ok := p.Source.(*Post); ok {
+						return post.ID, nil
+					}
+
+					return nil, nil
+				}},
 			"title":  &graphql.Field{Type: graphql.String},
 			"body":   &graphql.Field{Type: graphql.String},
 			"userid": &graphql.Field{Type: graphql.ID},

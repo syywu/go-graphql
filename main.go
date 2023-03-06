@@ -5,7 +5,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/syywu/go-graphql/db"
@@ -21,6 +23,12 @@ func main() {
 	db.CreatePostsTable()
 
 	r := chi.NewRouter()
+
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Logger)
+	r.Use(middleware.URLFormat)
+	r.Use(middleware.Recoverer)
+	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	// rootQuery- where to start
 	// creates schema and defines a schema config
